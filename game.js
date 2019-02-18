@@ -21,7 +21,7 @@ class Puck extends Rect {
 }
 
 window.onload = function () {
-  const canvas = document.getElementById ('gameCanvas');
+  const canvas = document.querySelector('#canvas');
   const context = canvas.getContext ('2d');
 
   const puck = new Puck;
