@@ -1,43 +1,53 @@
 // Global Variables
-var canvas;
-var canvasContext;
+let canvas = {
+  width: 1000,
+  height: 500
+};
 
-var ballX = 50;
-var ballY = 50;
+let canvasContext;
 
-var ballSpeedX = 5;
-var ballSpeedY = 2;
-
-var paddle1Y = 250;
-var paddle2Y = 250;
-
-const PADDLE_WIDTH = 10;
-const PADDLE_HEIGHT = 100;
-
-// Create Paddle Object
-function Paddle(width, height, xPosition, yPosition) {
-  
-  
-  this.width = 10;
-  this.height = 100;
-  this.xPosition = 50;
-  this.yPosition = 250;
-
-  // this.colorChange() = function() {
-  //   let rgb = drawPaddle.style.backgroundColor = rgb(red, 255, blue);
-
-  //   while (score ++) {
-  //     let red = 255;
-  //     let blue = 255;
-      
-  //     red -= 20;
-  //     blue -= 20;
-  //   }
-  //   return rgb;
-  // };
+// Paddle Properties - Left Paddle
+let paddle = {
+  width: 10,
+  height: 100,
+  xPos: 10,
+  yPos: canvas.height / 2.5,
+  color: 'white'
 }
 
+// AI Paddle Properties - Right Paddle
+let AI = {
+  paddle: {
+    width: 10,
+    height: 100,
+    xPos: canvas.width - 20,
+    yPos: canvas.height / 2.5,
+    color: 'white'
+  },
+  // AI Motion
+  move: () => {
+    let paddleCenter = AI.paddle.yPos + AI.paddle.height/2
 
+    if (paddleCenter < puck.yPos - AI.paddle.height/2) {
+      AI.paddle.yPos += 6;
+    } else if (paddleCenter < puck.yPos + AI.paddle.height/2){
+      AI.paddle.yPos -= 6;
+    } else {
+      AI.paddle.yPos += 0;
+    }
+  }
+}
+
+// Puck
+let puck = {
+  width: 10,
+  height: 10,
+  xPos: 0,
+  yPos: 0,
+  xSpeed: 5,
+  ySpeed: 2,
+  color: 'white'
+}
 
 function calculateMousePos (evt) {
   let rect = canvas.getBoundingClientRect();
@@ -54,7 +64,6 @@ function calculateMousePos (evt) {
 window.onload = function() {
   canvas = document.querySelector('#canvas');
   canvasContext = canvas.getContext ('2d');
-  canvas.style.backgroundColor = 'black';
 
   let framesPerSecond = 60;
   setInterval (function() {
@@ -62,76 +71,68 @@ window.onload = function() {
     drawGame();
   }, 1000/framesPerSecond);
 
-  canvas.addEventListener ('mousemove',
-    function (evt) {
-      var mousePos = calculateMousePos (evt);
-      paddle1Y = mousePos.y - (PADDLE_HEIGHT/2);
-    });
+  canvas.addEventListener ('mousemove', (event) => {
+    let mousePos = calculateMousePos(event);
+    paddle.yPos = mousePos.y - (paddle.height/2);
+  });
 }
 
 function ballReset() {
-  ballX = canvas.width/2;
-  ballY = canvas.height/2;
-  ballSpeedX = -ballSpeedX;
+  puck.xPos = canvas.width/2;
+  puck.yPos = canvas.height/2;
+  puck.xSpeed = -puck.xSpeed;
 }
 
-// AI --------------------------------
-function paddleAI() {
-  let paddleCenter = paddle2Y + PADDLE_HEIGHT/2
+// ---------- Puck Movement ---------- 
+function movement() {
+  AI.move();
 
-  if (paddleCenter < ballY - 35) {
-    paddle2Y += 6;
-  } else if (paddleCenter < ballY + 35){
-    paddle2Y -= 6;
+  puck.xPos += puck.xSpeed;
+  puck.yPos += puck.ySpeed;
+
+  // Puck Hitting Left Paddle & AI Score Point
+  if (puck.xPos < 0) {
+    if (puck.yPos > paddle.yPos && 
+      puck.yPos < paddle.yPos + paddle.height) {
+      puck.xSpeed = -puck.xSpeed;
+    } else {
+      ballReset();
+    }
+  }
+
+  // Puck Hitting Right Paddle & Player Score Pint
+  if (puck.xPos > canvas.width) {
+    if (puck.yPos > AI.paddle.yPos &&
+      puck.yPos < AI.paddle.yPos + AI.paddle.height) {
+      puck.xSpeed = -puck.xSpeed;
+    } else {
+      ballReset();
+    }
+  }
+
+  // Puck Bouncing Off Bottom
+  if (puck.yPos > canvas.height - puck.height) {
+    puck.ySpeed = -puck.ySpeed;
+  }
+
+  // Puck Bouncing Off Top
+  if (puck.yPos < 0) {
+    puck.ySpeed = -puck.ySpeed;
   }
 }
 
-// Movement --------------------------
-function movement() {
-  paddleAI ();
-
-  ballX += ballSpeedX;
-  ballY += ballSpeedY;
-
- if (ballX < 0) {
-   if (ballY > paddle1Y &&
-       ballY < paddle1Y + PADDLE_HEIGHT) {
-         ballSpeedX = -ballSpeedX;
-   } else {
-       ballReset();
-   }
- }
-
-    if (ballX > canvas.width) {
-      if (ballY > paddle2Y &&
-          ballY < paddle2Y + PADDLE_HEIGHT) {
-            ballSpeedX = -ballSpeedX;
-      } else {
-        ballReset();
-      }
-    }
-
-    if (ballY > canvas.height) {
-      ballSpeedY = -ballSpeedY;
-      }
-
-    if (ballY < 0) {
-      ballSpeedY = -ballSpeedY;
-      }
-    }
-
 function drawGame() {
-  //Canvas
+  // Canvas
   colorRect (0, 0, canvas.width, canvas.height, 'black');
 
-  //Player Paddle
-  colorRect (0, paddle1Y, PADDLE_WIDTH, PADDLE_HEIGHT, 'white');
+  // Player Paddle
+  colorRect (paddle.xPos, paddle.yPos, paddle.width, paddle.height, 'white');
 
-  //AI Paddle
-  colorRect (canvas.width-PADDLE_WIDTH, paddle2Y, PADDLE_WIDTH, PADDLE_HEIGHT, 'white');
+  // AI Paddle
+  colorRect (AI.paddle.xPos, AI.paddle.yPos, AI.paddle.width, AI.paddle.height, 'white');
 
-  //Ball
-  colorRect (ballX, ballY, 10, 10, 'white');
+  // Puck
+  colorRect (puck.xPos, puck.yPos, puck.width, puck.height, 'white');
 }
 
 function colorRect (leftX, topY, width, height, drawColor) {
