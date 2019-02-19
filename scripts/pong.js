@@ -6,7 +6,7 @@ let canvas = {
 
 let canvasContext;
 
-// Player Paddle Properties - Left Paddle
+// Paddle Properties - Left Paddle
 let paddle = {
   width: 10,
   height: 100,
@@ -30,28 +30,16 @@ let AI = {
     // Center of AI's Paddle
     let paddleCenter = AI.paddle.yPos + (AI.paddle.height / 2);
 
-    // AI Puck Trucking
     if (paddleCenter < puck.yPos && puck.xSpeed > 0) {
-      setTimeout(function(){
-        AI.paddle.yPos += 2;
-      }, 200);
-      
+      AI.paddle.yPos += 2;
     } else if (paddleCenter > puck.yPos && puck.xSpeed > 0){
       AI.paddle.yPos -= 2;
     } else {
       AI.paddle.yPos += 0;
     }
-
-    // AI Idle Movement
-    if (puck.xPos < 0) {
-      if (puck.yPos > canvas.height / 2) {
-        AI.paddle.yPos += 1;
-      } else if (puck.yPos < canvas.height / 2) {
-        AI.paddle.yPos -= 1;
-      }
-    }
   }
 };
+
 
 // Puck
 let puck = {
