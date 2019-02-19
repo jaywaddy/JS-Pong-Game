@@ -1,3 +1,23 @@
+// Game Score
+let playerScore = 0;
+let AIScore = 0;
+
+// Buffs & Debuffs
+let boost = function() {
+  puck.xSpeed *= 1.1;
+};
+
+let slow = function() {
+  puck.xSpeed *= 0.9;
+};
+
+let stickyPuck = () => {
+  // if () {
+
+  // }
+};
+
+
 // Canvas Properties
 let canvas = {
   width: 1000,
@@ -30,7 +50,7 @@ let AI = {
     // Center of AI's Paddle
     let paddleCenter = AI.paddle.yPos + (AI.paddle.height / 2);
 
-    // AI Puck Trucking
+    // AI Puck Tracker
     if (paddleCenter < puck.yPos && puck.xSpeed > 0) {
       setTimeout(function(){
         AI.paddle.yPos += 2;
@@ -86,7 +106,7 @@ let puck = {
     
     // Puck Hitting Left or Right Wall
     if (puck.xPos < 0 || puck.xPos > canvas.width) {
-      ballReset();
+      resetPuck();
     }
 
     // Puck Bouncing Off Bottom
@@ -128,7 +148,7 @@ window.onload = function() {
   });
 }
 
-function ballReset() {
+function resetPuck() {
   puck.xPos = canvas.width/2;
   puck.yPos = canvas.height/2;
   puck.xSpeed = -puck.xSpeed;
