@@ -22,6 +22,8 @@ let stickyPuck = () => {
 let canvas = {
   width: 1000,
   height: 500,
+  xCenter: 500,
+  yCenter: 250
 };
 
 let canvasContext;
@@ -32,7 +34,8 @@ let paddle = {
   height: 100,
   xPos: 10,
   yPos: canvas.height / 2.5,
-  color: 'white'
+  color: 'white',
+  center: 50
 };
 
 // AI Paddle Properties - Right Paddle
@@ -42,33 +45,57 @@ let AI = {
     height: 100,
     xPos: canvas.width - 20,
     yPos: canvas.height / 2.5,
-    color: 'white'
+    color: 'white',
+    center: () => {
+      let center = AI.paddle.yPos + (AI.paddle.height / 2);
+      return center;
+    }
   },
 
   // AI Motion
   move: () => {
     // Center of AI's Paddle
-    let paddleCenter = AI.paddle.yPos + (AI.paddle.height / 2);
+    // let paddleCenter = AI.paddle.yPos + AI.paddle.center;
 
     // AI Puck Tracker
-    if (paddleCenter < puck.yPos && puck.xSpeed > 0) {
+    if (AI.paddle.center() < puck.yPos && puck.xSpeed > 0) {
       setTimeout(function(){
         AI.paddle.yPos += 2;
-      }, 200);
-      
-    } else if (paddleCenter > puck.yPos && puck.xSpeed > 0){
+      }, 0);
+    } else if (AI.paddle.center() > puck.yPos && puck.xSpeed > 0){
       AI.paddle.yPos -= 2;
     } else {
       AI.paddle.yPos += 0;
     }
 
-    // AI Idle Movement
-    if (puck.xPos < 0) {
-      if (puck.yPos > canvas.height / 2) {
-        AI.paddle.yPos += 1;
-      } else if (puck.yPos < canvas.height / 2) {
-        AI.paddle.yPos -= 1;
-      }
+    if (puck.xSpeed < 0 && AI.paddle.center() == canvas.yCenter) {
+      AI.paddle.yPos += 0;
+    }
+  },
+
+  // AI Idle Reset
+  reset: () => {
+    // if (puck.xSpeed < 0) {
+    //   if (puck.ySpeed < 0) {
+    //     AI.paddle.yPos -= 2;
+    //   } 
+    // }
+
+    // if (puck.xSpeed < 0) {
+      
+    //   if (puck.ySpeed > 0) {
+    //     AI.paddle.yPos += 2;
+    //   } 
+      
+    //   if (AI.paddle.yPos == canvas.height / 2) {
+    //     AI.paddle.yPos += 0;
+    //   }
+    // }
+
+    if (puck.ySpeed < 0 
+      && AI.paddle.yPos + (AI.paddle.height / 2) != canvas.yCenter
+      && AI.paddle.yPos + (AI.paddle.height / 2) != canvas.yCenter) {
+      AI.paddle.yPos += 1
     }
   }
 };
@@ -77,8 +104,8 @@ let AI = {
 let puck = {
   width: 10,
   height: 10,
-  xPos: canvas.width / 2,
-  yPos: canvas.height / 2,
+  xPos: canvas.xCenter,
+  yPos: canvas.yCenter,
   xSpeed: 5,
   ySpeed: 2,
   color: 'white',
@@ -88,21 +115,6 @@ let puck = {
     AI.move();
     puck.xPos += puck.xSpeed;
     puck.yPos += puck.ySpeed;
-
-    // Puck Hitting Left Paddle
-    if (puck.yPos > paddle.yPos
-        && puck.yPos < paddle.yPos + paddle.height
-        && puck.xPos == paddle.xPos) {
-      puck.xSpeed = -puck.xSpeed;
-    }
-
-    // Puck Hitting Right Paddle
-    
-    if (puck.yPos > AI.paddle.yPos
-        && puck.yPos < AI.paddle.yPos + AI.paddle.height
-        && puck.xPos == AI.paddle.xPos) {
-      puck.xSpeed = -puck.xSpeed;
-    }
     
     // Puck Hitting Left or Right Wall
     if (puck.xPos < 0 || puck.xPos > canvas.width) {
@@ -117,6 +129,29 @@ let puck = {
     // Puck Bouncing Off Top
     if (puck.yPos < 0) {
       puck.ySpeed = -puck.ySpeed;
+    }
+  },
+
+  //Bouncing Off Left
+  bounceLeft: () => {
+    if (puck.yPos > paddle.yPos
+      && puck.yPos < paddle.yPos + paddle.height
+      && puck.xPos == paddle.xPos) {
+      puck.xSpeed = -puck.xSpeed;
+
+      console.log('bounce left');
+    }
+  },
+
+  // Bouncing Off Right Paddle
+  bounceRight: () => {
+    if (puck.yPos > AI.paddle.yPos
+      && puck.yPos < AI.paddle.yPos + AI.paddle.height
+      && puck.xPos == AI.paddle.xPos) {
+      puck.xSpeed = -puck.xSpeed;
+      
+      AI.reset();
+      console.log('bounce right');
     }
   }
 };
@@ -139,18 +174,20 @@ window.onload = function() {
   let framesPerSecond = 60;
   setInterval (function() {
     puck.move();
+    puck.bounceLeft();
+    puck.bounceRight();
     drawGame();
   }, 1000/framesPerSecond);
 
   canvas.addEventListener ('mousemove', (event) => {
     let mousePos = calculateMousePos(event);
-    paddle.yPos = mousePos.y - (paddle.height/2);
+    paddle.yPos = mousePos.y - (paddle.center);
   });
 }
 
 function resetPuck() {
-  puck.xPos = canvas.width/2;
-  puck.yPos = canvas.height/2;
+  puck.xPos = canvas.xCenter;
+  puck.yPos = canvas.yCenter;
   puck.xSpeed = -puck.xSpeed;
 }
 
