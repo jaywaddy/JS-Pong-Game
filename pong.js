@@ -35,7 +35,10 @@ let paddle = {
   xPos: 10,
   yPos: canvas.height / 2.5,
   color: 'white',
-  center: 50
+  center: () => {
+    let center = paddle.yPos + (paddle.height / 2);
+    return center;
+  }
 };
 
 // AI Paddle Properties - Right Paddle
@@ -54,48 +57,41 @@ let AI = {
 
   // AI Motion
   move: () => {
-    // Center of AI's Paddle
-    // let paddleCenter = AI.paddle.yPos + AI.paddle.center;
-
     // AI Puck Tracker
     if (AI.paddle.center() < puck.yPos && puck.xSpeed > 0) {
       setTimeout(function(){
         AI.paddle.yPos += 2;
-      }, 0);
+      }, 200);
     } else if (AI.paddle.center() > puck.yPos && puck.xSpeed > 0){
       AI.paddle.yPos -= 2;
     } else {
       AI.paddle.yPos += 0;
     }
 
-    if (puck.xSpeed < 0 && AI.paddle.center() == canvas.yCenter) {
-      AI.paddle.yPos += 0;
-    }
+    
   },
 
   // AI Idle Reset
   reset: () => {
-    // if (puck.xSpeed < 0) {
-    //   if (puck.ySpeed < 0) {
-    //     AI.paddle.yPos -= 2;
-    //   } 
-    // }
 
-    // if (puck.xSpeed < 0) {
-      
-    //   if (puck.ySpeed > 0) {
-    //     AI.paddle.yPos += 2;
-    //   } 
-      
-    //   if (AI.paddle.yPos == canvas.height / 2) {
-    //     AI.paddle.yPos += 0;
-    //   }
-    // }
+    // Mover to Center from Above
+    while (puck.xSpeed < 0
+      && AI.paddle.center() < canvas.height / 2) {
+      AI.paddle.yPos += 1.5;
+      if (AI.paddle.center() == canvas.height / 2) {
+        AI.paddle.yPos += 0;
+      }
+      break;
+    }
 
-    if (puck.ySpeed < 0 
-      && AI.paddle.yPos + (AI.paddle.height / 2) != canvas.yCenter
-      && AI.paddle.yPos + (AI.paddle.height / 2) != canvas.yCenter) {
-      AI.paddle.yPos += 1
+    // Mover to Center from Below
+    while (puck.xSpeed < 0
+      && AI.paddle.center() > canvas.height / 2) {
+      AI.paddle.yPos -= 1.5;
+      if (AI.paddle.center() == canvas.height / 2) {
+        AI.paddle.yPos += 0;
+      }
+      break;
     }
   }
 };
@@ -150,9 +146,10 @@ let puck = {
       && puck.xPos == AI.paddle.xPos) {
       puck.xSpeed = -puck.xSpeed;
       
-      AI.reset();
       console.log('bounce right');
+      AI.reset();
     }
+    AI.reset();
   }
 };
 
@@ -181,7 +178,7 @@ window.onload = function() {
 
   canvas.addEventListener ('mousemove', (event) => {
     let mousePos = calculateMousePos(event);
-    paddle.yPos = mousePos.y - (paddle.center);
+    paddle.yPos = mousePos.y - (paddle.height / 2);
   });
 }
 
