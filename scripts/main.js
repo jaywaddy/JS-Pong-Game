@@ -51,6 +51,7 @@ window.onload = function() {
     puck.move();
     puck.bounceLeft();
     puck.bounceRight();
+    puck.bounceAngle();
     drawGame();
   }, 1000/framesPerSecond);
 

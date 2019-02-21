@@ -30,10 +30,10 @@ let paddle = {
       // AI Puck Tracker
       if (AI.paddle.center() < puck.yPos && puck.xSpeed > 0) {
         setTimeout(function(){
-          AI.paddle.yPos += 2;
+          AI.paddle.yPos += 3;
         }, 200);
       } else if (AI.paddle.center() > puck.yPos && puck.xSpeed > 0){
-        AI.paddle.yPos -= 2;
+        AI.paddle.yPos -= 3;
       } else {
         AI.paddle.yPos += 0;
       }
@@ -45,23 +45,27 @@ let paddle = {
     reset: () => {
   
       // Mover to Center from Above
-      while (puck.xSpeed < 0
-        && AI.paddle.center() < canvas.height / 2) {
-        AI.paddle.yPos += 1.5;
-        if (AI.paddle.center() == canvas.height / 2) {
-          AI.paddle.yPos += 0;
+      setTimeout( () => {
+        while (puck.xSpeed < 0
+          && AI.paddle.center() < canvas.height / 2) {
+          AI.paddle.yPos += 1.5;
+          if (AI.paddle.center() == canvas.height / 2) {
+            AI.paddle.yPos += 0;
+          }
+          break;
         }
-        break;
-      }
-  
+      }, 200);
+      
       // Mover to Center from Below
-      while (puck.xSpeed < 0
-        && AI.paddle.center() > canvas.height / 2) {
-        AI.paddle.yPos -= 1.5;
-        if (AI.paddle.center() == canvas.height / 2) {
-          AI.paddle.yPos += 0;
+      setTimeout( () => {
+        while (puck.xSpeed < 0
+          && AI.paddle.center() > canvas.height / 2) {
+          AI.paddle.yPos -= 1.5;
+          if (AI.paddle.center() == canvas.height / 2) {
+            AI.paddle.yPos += 0;
+          }
+          break;
         }
-        break;
-      }
+      }, 200);
     }
   };

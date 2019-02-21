@@ -34,10 +34,8 @@ let puck = {
     bounceLeft: () => {
       if (puck.yPos > paddle.yPos
         && puck.yPos < paddle.yPos + paddle.height
-        && puck.xPos == paddle.xPos) {
+        && puck.xPos < paddle.xPos) {
         puck.xSpeed = -puck.xSpeed;
-  
-        console.log('bounce left');
       }
     },
   
@@ -45,12 +43,56 @@ let puck = {
     bounceRight: () => {
       if (puck.yPos > AI.paddle.yPos
         && puck.yPos < AI.paddle.yPos + AI.paddle.height
-        && puck.xPos == AI.paddle.xPos) {
+        && puck.xPos > AI.paddle.xPos) {
         puck.xSpeed = -puck.xSpeed;
-        
-        console.log('bounce right');
         AI.reset();
       }
       AI.reset();
+    },
+
+    // Bounce Angle Mechanics
+    bounceAngle: () => {
+      // Puck Fraction Values ( In 5ths)
+      let x1 = 0.2,
+          x2 = 0.4,
+          x3 = 0.6,
+          x4 = 0.8;
+
+      // 1/5
+      if (puck.yPos > paddle.yPos && puck.yPos < paddle.yPos + (paddle.height * x1) && puck.xPos < paddle.xPos
+        || puck.yPos > AI.paddle.yPos && puck.yPos < AI.paddle.yPos + (AI.paddle.height * x1) && puck.xPos > AI.paddle.xPos) {
+          puck.ySpeed = 2;
+          puck.ySpeed *= 1.5;
+          slow();
+      }
+
+      // 2/5
+      if (puck.yPos > paddle.yPos + (paddle.height * x1) && puck.yPos < paddle.yPos + (paddle.height * x2) && puck.xPos < paddle.xPos
+        || puck.yPos > AI.paddle.yPos && puck.yPos < AI.paddle.yPos + (AI.paddle.height * x2) && puck.xPos > AI.paddle.xPos) {
+          puck.ySpeed = 2;
+          puck.ySpeed *=  -1.2;
+      }
+
+      // 3/5
+      if (puck.yPos > paddle.yPos + (paddle.height * x2) && puck.yPos < paddle.yPos + (paddle.height * x3) && puck.xPos < paddle.xPos
+        || puck.yPos > AI.paddle.yPos && puck.yPos < AI.paddle.yPos + (AI.paddle.height * x3) && puck.xPos > AI.paddle.xPos) {
+          puck.ySpeed = 2;
+          boost();
+      }
+
+      // 4/5
+      if (puck.yPos > paddle.yPos + (paddle.height * x3) && puck.yPos < paddle.yPos + (paddle.height * x4) && puck.xPos < paddle.xPos
+        || puck.yPos > AI.paddle.yPos && puck.yPos < AI.paddle.yPos + (AI.paddle.height * x4) && puck.xPos > AI.paddle.xPos) {
+          puck.ySpeed = 2;
+          puck.ySpeed *=  -1.2;
+      }
+
+      // 5/5
+      if (puck.yPos > paddle.yPos + (paddle.height * x4) && puck.yPos < paddle.yPos + (paddle.height) && puck.xPos < paddle.xPos
+        || puck.yPos > AI.paddle.yPos && puck.yPos < AI.paddle.yPos + (AI.paddle.height) && puck.xPos > AI.paddle.xPos) {
+          puck.ySpeed = 2;
+          puck.ySpeed *= 1.5;
+          // slow();
+      }
     }
   };
