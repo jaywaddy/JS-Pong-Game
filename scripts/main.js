@@ -62,9 +62,12 @@ window.onload = function() {
 }
 
 function resetPuck() {
-  puck.xPos = canvas.xCenter;
-  puck.yPos = canvas.yCenter;
+  puck.xPos = canvas.width / 2;
+  puck.yPos = canvas.height / 2;
+  puck.xSpeed = 5;
   puck.xSpeed = -puck.xSpeed;
+  puck.ySpeed = 2;
+
 }
 
 function drawGame() {
