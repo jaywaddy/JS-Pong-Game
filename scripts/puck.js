@@ -14,9 +14,16 @@ let puck = {
       puck.xPos += puck.xSpeed;
       puck.yPos += puck.ySpeed;
       
-      // Puck Hitting Left or Right Wall
-      if (puck.xPos < 0 || puck.xPos > canvas.width) {
+      // Puck Hitting Left Wall
+      if (puck.xPos < 0) {
         resetPuck();
+        AIScore ++;
+      }
+
+      // Puck Hitting Right Wall
+      if (puck.xPos > canvas.width) {
+        resetPuck();
+        playerScore ++;
       }
   
       // Puck Bouncing Off Bottom
